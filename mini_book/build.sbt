@@ -10,7 +10,8 @@ lazy val compileFlags = Seq(
   "-language:existentials",
   "-language:implicitConversions",
   "-Ypartial-unification",
-  "-Xfatal-warnings"
+  "-Xfatal-warnings",
+  "-Ypatmat-exhaust-depth off",
 )
 
 lazy val mini_book = (project in file("."))

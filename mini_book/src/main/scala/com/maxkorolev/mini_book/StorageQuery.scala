@@ -5,7 +5,7 @@ import cats.syntax.functor._
 
 trait StorageQuery[F[_], K, V] {
   def getById(id: K): F[Option[V]]
-  def getSorted: F[List[V]]
+  def getSorted: F[List[(K, V)]]
 }
 
 object StorageQuery {
@@ -17,8 +17,8 @@ object StorageQuery {
 
     override def getById(id: K): F[Option[V]] = storage.source.map(_.get(id))
 
-    override def getSorted: F[List[V]] =
-      storage.source.map(_.toList.sortBy(_._1).map(_._2).sorted)
+    override def getSorted: F[List[(K, V)]] =
+      storage.source.map(_.toList.sortBy(_._1).sortBy(_._2))
   }
 }
 

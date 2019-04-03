@@ -29,7 +29,7 @@ class StorageQuerySpec extends FlatSpec with Matchers {
       lst <- query.getSorted
 
     } yield {
-      lst.map(_.value) shouldEqual List(777, 123)
+      lst.map(_._2.value) shouldEqual List(777, 123)
     }).unsafeRunSync()
   }
 }
