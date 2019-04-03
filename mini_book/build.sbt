@@ -31,5 +31,6 @@ lazy val mini_book = (project in file("."))
       scalaTest,
       catsEffect,
       shapeless,
+      simulacrum,
     ),
   )

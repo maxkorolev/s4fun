@@ -19,10 +19,10 @@ class StorageSpec extends FlatSpec with Matchers {
       _ <- storage.add("Q3", 456)
       _ <- storage.update("Q2", 777)
       _ <- storage.delete("Q3")
-      lst <- storage.getAll
+      map <- storage.source
 
     } yield {
-      lst shouldEqual List(123, 777)
+      map.values.toList shouldEqual List(123, 777)
     }).unsafeRunSync()
   }
 }
