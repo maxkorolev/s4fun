@@ -29,7 +29,7 @@ lazy val mini_book = (project in file("."))
       typesafeConfig,
       logbackClassic,
       scalaTest,
-      cats,
+      catsEffect,
       shapeless,
     ),
   )
