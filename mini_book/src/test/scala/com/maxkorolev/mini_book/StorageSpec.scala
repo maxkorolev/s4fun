@@ -1,7 +1,7 @@
-package com.maxkorolev
+package com.maxkorolev.mini_book
 
-import org.scalatest._
 import cats.effect._
+import org.scalatest._
 
 import scala.concurrent.ExecutionContext
 

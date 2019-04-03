@@ -1,9 +1,9 @@
-package com.maxkorolev
+package com.maxkorolev.mini_book
 
 import cats.effect.concurrent.MVar
 import cats.effect.{Concurrent, Sync}
-import cats.syntax.functor._
 import cats.syntax.flatMap._
+import cats.syntax.functor._
 
 trait Storage[F[_], K, V] {
   def source: F[Map[K, V]]

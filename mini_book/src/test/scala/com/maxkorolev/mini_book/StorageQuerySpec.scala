@@ -1,4 +1,4 @@
-package com.maxkorolev
+package com.maxkorolev.mini_book
 
 import cats.effect._
 import org.scalatest._
