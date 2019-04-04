@@ -11,8 +11,7 @@ class AnimationSpec extends FlatSpec with Matchers {
 
   "animation" should "go" in {
 
-    val anim = new Animation
-    import anim._
+    import Animation._
 
     animate("..R....", 2) shouldBe Array("..X....",  "....X..",  "......X",  ".......")
     animate("..R.....", 2) shouldBe Array("..X.....",  "....X...",  "......X.",  "........")

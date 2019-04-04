@@ -1,13 +1,16 @@
 package com.maxkorolev.animation
 
-class Animation {
+import scala.language.experimental.macros
+import scala.reflect.macros.blackbox
+
+object Animation {
 
   sealed trait Direction
   case object Left extends Direction
   case object Right extends Direction
   case class Part(index: Int, direction: Direction)
 
-  def animate(init: String, speed: Int): Array[String] = {
+  private def normalAnimate(init: String, speed: Int): Array[String] = {
 
     val len = init.length
     val parts = init.zipWithIndex.foldLeft(Nil: List[Part]) {
@@ -39,6 +42,20 @@ class Animation {
       }
     }.toArray
 
+  }
+
+  def animate(init: String, speed: Int): Array[String] = macro animateImpl
+
+  def animateImpl(c: blackbox.Context)(init: c.Expr[String], speed: c.Expr[Int]) = {
+    import c.universe._
+    init -> speed match {
+      case (Expr(Literal(Constant(initValue: String))), Expr(Literal(Constant(speedValue: Int)))) =>
+        val result = normalAnimate(initValue, speedValue).map(str => q"$str")
+
+        q"..$result"
+      case _ =>
+        q"Array()"
+    }
   }
 }
 
