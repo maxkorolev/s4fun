@@ -11,4 +11,5 @@ object Dependencies {
 
   lazy val shapeless           = "com.chuusai"            %% "shapeless"            % "2.3.3"
   lazy val simulacrum          = "com.github.mpilquist"   %% "simulacrum"           % "0.15.0"
+  lazy val fastparse           = "com.lihaoyi"            %% "fastparse"            % "2.1.0"
 }

@@ -19,8 +19,7 @@ object MiniBook extends IOApp {
         |Q7/O/N/1.33/200000
         |Q5/B/U/1.20/500000
         |Q7/O/U/1.33/100000
-        |Q7/O/D/0/0
-      """.stripMargin
+        |Q7/O/D/0/0""".stripMargin
 
     for {
       _ <- IO.delay(println("hello"))
@@ -35,16 +34,17 @@ object MiniBook extends IOApp {
 
       parser = Parser(offers, bids)
 
-      _ <- IO.delay(println(s"Lets move some book $inputStr\r\n\r\n"))
+      _ <- IO.delay(println(s"Lets move some book\r\n$inputStr\r\n\r\n"))
 
-      _ <- inputStr.split("\r\n").toList.map(parser.parse).sequence
+      _ <- inputStr.split("\n").toList.map(parser.parse).sequence
 
       offs <- offerQuery.getSorted
       bds <- bidQuery.getSorted
 
-      _ <- IO.delay(println(s"OFFER\r\n"))
+      _ <- IO.delay(println("OFFER"))
       _ <- IO.delay(println(offs.map(Show[(QuoteID, Quote)].show).mkString("\r\n")))
-      _ <- IO.delay(println(s"BID\r\n"))
+      _ <- IO.delay(println(""))
+      _ <- IO.delay(println("BID"))
       _ <- IO.delay(println(bds.map(Show[(QuoteID, Quote)].show).mkString("\r\n")))
 
     } yield ExitCode.Success

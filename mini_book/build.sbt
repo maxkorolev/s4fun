@@ -10,8 +10,7 @@ lazy val compileFlags = Seq(
   "-language:existentials",
   "-language:implicitConversions",
   "-Ypartial-unification",
-  "-Xfatal-warnings",
-  "-Ypatmat-exhaust-depth off",
+  "-Xfatal-warnings"
 )
 
 lazy val mini_book = (project in file("."))
@@ -33,5 +32,6 @@ lazy val mini_book = (project in file("."))
       catsEffect,
       shapeless,
       simulacrum,
+      fastparse,
     ),
   )
