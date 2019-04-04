@@ -21,18 +21,23 @@ package object mini_book {
   case class QuotePrice(value: BigDecimal) extends AnyVal
   case class QuoteVolume(value: BigDecimal) extends AnyVal
 
-  case class Quote(quoteCreateAt: QuoteCreateAt,
-                   quotePrice: QuotePrice,
-                   quoteVolume: QuoteVolume,
-                  )
+  case class Quote[T <: QuoteType](quoteCreateAt: QuoteCreateAt,
+                                   quotePrice: QuotePrice,
+                                   quoteVolume: QuoteVolume,
+                                  )
 
   sealed trait QuoteError extends RuntimeException
   final case class QuoteNotFound(id: QuoteID) extends QuoteError
 
   implicit val orderingQuoteID: Ordering[QuoteID] = Ordering.by(v => v.value)
-  implicit val orderingQuote: Ordering[Quote] = Ordering.by(v => -v.quotePrice.value)
+  implicit val orderingQuoteOffer: Ordering[Quote[Offer.type]] = Ordering.by(v =>
+    (v.quotePrice.value, -v.quoteVolume.value, -v.quoteCreateAt.value.toEpochMilli )
+  )
+  implicit val orderingQuoteBid: Ordering[Quote[Bid.type]] = Ordering.by(v =>
+    (-v.quotePrice.value, -v.quoteVolume.value, -v.quoteCreateAt.value.toEpochMilli )
+  )
 
-  implicit val showQuote: Show[(QuoteID, Quote)] = Show.show {
+  implicit def showQuote[T <: QuoteType]: Show[(QuoteID, Quote[T])] = Show.show {
     case (id, q)=> s"${id.value}/${q.quotePrice.value}/${q.quoteVolume.value}"
   }
 

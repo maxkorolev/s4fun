@@ -1,9 +1,9 @@
 package com.maxkorolev.mini_book
 
-import cats.Show
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.syntax.traverse._
 import cats.instances.list._
+import cats.syntax.show._
 
 object MiniBook extends IOApp {
 
@@ -24,11 +24,11 @@ object MiniBook extends IOApp {
     for {
       _ <- IO.delay(println("hello"))
 
-      offerStorage <- Storage[IO, QuoteID, Quote]
+      offerStorage <- Storage[IO, QuoteID, Quote[Offer.type]]
       offerQuery <- StorageQuery(offerStorage)
       offers <- QuoteService(offerStorage, offerQuery)
 
-      bidStorage <- Storage[IO, QuoteID, Quote]
+      bidStorage <- Storage[IO, QuoteID, Quote[Bid.type]]
       bidQuery <- StorageQuery(bidStorage)
       bids <- QuoteService(bidStorage, bidQuery)
 
@@ -42,10 +42,10 @@ object MiniBook extends IOApp {
       bds <- bidQuery.getSorted
 
       _ <- IO.delay(println("OFFER"))
-      _ <- IO.delay(println(offs.map(Show[(QuoteID, Quote)].show).mkString("\r\n")))
+      _ <- IO.delay(println(offs.map(_.show).mkString("\r\n")))
       _ <- IO.delay(println(""))
       _ <- IO.delay(println("BID"))
-      _ <- IO.delay(println(bds.map(Show[(QuoteID, Quote)].show).mkString("\r\n")))
+      _ <- IO.delay(println(bds.map(_.show).mkString("\r\n")))
 
     } yield ExitCode.Success
 

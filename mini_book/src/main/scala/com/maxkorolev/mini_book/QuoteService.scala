@@ -20,20 +20,22 @@ trait QuoteService[F[_]] {
 
 object QuoteService {
 
-  def apply[F[_]: Sync](str: Storage[F, QuoteID, Quote], query: StorageQuery[F, QuoteID, Quote]): F[QuoteService[F]]   =
+  def apply[F[_] : Sync, T <: QuoteType](str: Storage[F, QuoteID, Quote[T]],
+                                         query: StorageQuery[F, QuoteID, Quote[T]]
+                                        ): F[QuoteService[F]] =
     Sync[F].pure(Impl(str, query))
 
-  private case class Impl[F[_]: Sync](storage: Storage[F, QuoteID, Quote],
-                                      query: StorageQuery[F, QuoteID, Quote]
-                                     ) extends QuoteService[F] {
+  private case class Impl[F[_] : Sync, T <: QuoteType](storage: Storage[F, QuoteID, Quote[T]],
+                                                       query: StorageQuery[F, QuoteID, Quote[T]]
+                                                      ) extends QuoteService[F] {
     override def newQuote(id: QuoteID, price: QuotePrice, volume: QuoteVolume): F[Unit] = for {
       now <- Sync[F].delay(Instant.now)
-      _ <- storage.add(id, Quote(QuoteCreateAt(now), price, volume))
+      _ <- storage.add(id, Quote[T](QuoteCreateAt(now), price, volume))
     } yield ()
 
     override def updateQuote(id: QuoteID, price: QuotePrice, volume: QuoteVolume): F[Unit] = {
       for {
-        old <- OptionT(query.getById(id))  // TODO implement MonadError
+        old <- OptionT(query.getById(id)) // TODO implement MonadError
         _ <- OptionT.liftF(storage.update(id, old.copy(quotePrice = price, quoteVolume = volume)))
       } yield ()
     }.getOrElse(())
@@ -42,4 +44,5 @@ object QuoteService {
 
     override def deleteAllQuotes(): F[Unit] = storage.deleteAll()
   }
+
 }

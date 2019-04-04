@@ -12,7 +12,7 @@ class QuoteServiceSpec extends FlatSpec with Matchers {
   "Storage" should "be able add, update and delete elements" in {
 
     (for {
-      storage <- Storage[IO, QuoteID, Quote]
+      storage <- Storage[IO, QuoteID, Quote[Offer.type]]
       query <- StorageQuery(storage)
       quotes <- QuoteService(storage, query)
 
