@@ -21,17 +21,16 @@ object Storage {
     override def source: F[Map[K, V]] = ref.get
 
     override def add(id: K, value: V): F[Unit] =
-      ref.get.flatMap(map => ref.set(map + (id -> value)))
+      ref.update(map => map + (id -> value))
 
     override def update(id: K, value: V): F[Unit] =
-      ref.get.flatMap(map => ref.set(map + (id -> value)))
+      ref.update(map => map + (id -> value))
 
     override def delete(id: K): F[Unit] =
-      ref.get.flatMap(map => ref.set(map - id))
+      ref.update(map => map - id)
 
     override def deleteAll(): F[Unit] =
-      ref.get.flatMap(_ => ref.set(Map()))
-
+      ref.update(_ => Map())
   }
 
 }
