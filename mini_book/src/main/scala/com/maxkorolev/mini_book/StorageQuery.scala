@@ -15,10 +15,11 @@ object StorageQuery {
 
   private case class Impl[F[_]: Monad, K: Ordering, V: Ordering](storage: Storage[F, K, V]) extends StorageQuery[F, K, V] {
 
-    override def getById(id: K): F[Option[V]] = storage.source.map(_.get(id))
+    override def getById(id: K): F[Option[V]] =
+      storage.source.map(_.get(id))
 
     override def getSorted: F[List[(K, V)]] =
-      storage.source.map(_.toList.sortBy(_._1).sortBy(_._2))
+      storage.source.map(_.toList.sorted)
   }
 }
 
