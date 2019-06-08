@@ -19,16 +19,23 @@ object BankServer {
   ): Stream[F, Nothing] = {
 
     val config = pureconfig.loadConfigOrThrow[BankConfig]("bank")
-    val httpApp = (
-      BankRoutes.accountRoutes[F]
-    ).orNotFound
+    for {
+      topic <- Stream.eval(Topic[F, Bank.Transaction](Bank.Init))
+      vault <- Stream.eval(Storage[F, Bank.UserID, Bank.Money])
+      bank = Bank.impl[F](topic)
 
-    // With Middlewares in place
-    val finalHttpApp = Logger.httpApp(true, true)(httpApp)
+      httpApp = (
+        BankRoutes.accountRoutes[F]
+      ).orNotFound
 
-    BlazeServerBuilder[F]
-      .bindHttp(8080, "0.0.0.0")
-      .withHttpApp(finalHttpApp)
-      .serve
+      // With Middlewares in place
+      finalHttpApp = Logger.httpApp(true, true)(httpApp)
+
+      exitCode <- BlazeServerBuilder[F]
+        .bindHttp(8080, "0.0.0.0")
+        .withHttpApp(finalHttpApp)
+        .serve
+    } yield exitCode
+
   }.drain
 }
