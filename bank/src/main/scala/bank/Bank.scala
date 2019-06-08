@@ -29,6 +29,12 @@ object Bank {
   type Day = Int
   type CreatedAt = Instant
 
+  case class AmountDTO(amount: Money)
+  object AmountDTO {
+    implicit val decoder: Decoder[AmountDTO] = deriveDecoder
+    implicit val encoder: Encoder[AmountDTO] = deriveEncoder
+  }
+
   sealed trait Transaction
 
   final case object Init extends Transaction

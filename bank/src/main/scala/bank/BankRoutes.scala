@@ -21,17 +21,31 @@ object BankRoutes {
   ): EntityEncoder[F, T] =
     jsonEncoderOf[F, T]
 
-  def accountRoutes[F[_]: Sync]: HttpRoutes[F] = {
+  def accountRoutes[F[_]: Sync](
+      bank: Bank[F],
+      vault: Storage[F, Bank.UserID, Bank.Money]
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
     HttpRoutes.of[F] {
-      case req @ GET -> Root / "balance" =>
-        Ok("")
-      case req @ POST -> Root / "deposit" =>
-        Ok("")
-      case req @ POST -> Root / "withdrawal" =>
-        Ok("")
+      case GET -> Root / "balance" / userID =>
+        vault.get(userID) flatMap {
+          case Some(value) => Ok(value)
+          case None        => NotFound("")
+        }
+      case req @ POST -> Root / "deposit" / userID =>
+        for {
+          dto <- req.as[Bank.AmountDTO]
+          _ <- bank.deposit(userID, dto.amount)
+          resp <- Ok("")
+        } yield resp
+      case req @ POST -> Root / "withdraw" / userID =>
+        for {
+          dto <- req.as[Bank.AmountDTO]
+          _ <- bank.withdraw(userID, dto.amount)
+          resp <- Ok("")
+        } yield resp
 
     }
   }

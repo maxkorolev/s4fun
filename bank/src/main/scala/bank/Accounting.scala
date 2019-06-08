@@ -14,7 +14,7 @@ import bank.Bank.Withdrawal
 
 trait Accounting[F[_]] {
 
-  def run: Stream[F, Unit]
+  def run: Stream[F, Bank.Transaction]
 }
 
 object Accounting {
@@ -25,11 +25,12 @@ object Accounting {
   )(implicit F: Sync[F]): Accounting[F] =
     new Accounting[F] {
 
-      def run: Stream[F, Unit] = {
-        eventsTopic.subscribe(1).evalMap {
-          case d: Deposit    => addOrUpdate(vault, d.userID, d.amount)
-          case w: Withdrawal => addOrUpdate(vault, w.userID, -w.amount)
-          case _             => F.pure(())
+      def run: Stream[F, Bank.Transaction] = {
+        eventsTopic.subscribe(1).evalMap[F, Bank.Transaction] {
+          case d: Deposit => addOrUpdate(vault, d.userID, d.amount).map(_ => d)
+          case w: Withdrawal =>
+            addOrUpdate(vault, w.userID, -w.amount).map(_ => w)
+          case trans: Bank.Transaction => F.pure(trans)
         }
       }
     }

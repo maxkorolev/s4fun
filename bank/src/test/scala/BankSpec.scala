@@ -42,7 +42,6 @@ class BankSpec extends FlatSpec with Matchers {
     }
 
     io.compile.toList.unsafeRunSync() shouldEqual List(true, true)
-
   }
 
   "Bank" should "keep accounts" in {

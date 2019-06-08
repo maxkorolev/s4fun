@@ -24,9 +24,7 @@ object BankServer {
       vault <- Stream.eval(Storage[F, Bank.UserID, Bank.Money])
       bank = Bank.impl[F](topic)
 
-      httpApp = (
-        BankRoutes.accountRoutes[F]
-      ).orNotFound
+      httpApp = (BankRoutes.accountRoutes[F](bank, vault)).orNotFound
 
       // With Middlewares in place
       finalHttpApp = Logger.httpApp(true, true)(httpApp)
