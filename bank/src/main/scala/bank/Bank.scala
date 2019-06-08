@@ -11,17 +11,9 @@ import java.{util => ju}
 
 trait Bank[F[_]] {
 
-  def withdraw(
-      userID: Bank.UserID,
-      amount: Bank.Money,
-      createdAt: Bank.CreatedAt
-  ): F[Bank.TransactionID]
+  def withdraw(userID: Bank.UserID, amount: Bank.Money): F[Bank.TransactionID]
 
-  def deposit(
-      userID: Bank.UserID,
-      amount: Bank.Money,
-      createdAt: Bank.CreatedAt
-  ): F[Bank.TransactionID]
+  def deposit(userID: Bank.UserID, amount: Bank.Money): F[Bank.TransactionID]
 
   def transactions: Stream[F, Bank.Transaction]
   def withdrawals: Stream[F, Bank.Withdrawal]
@@ -69,22 +61,22 @@ object Bank {
 
       def withdraw(
           userID: Bank.UserID,
-          amount: Bank.Money,
-          createdAt: Bank.CreatedAt
+          amount: Bank.Money
       ): F[Bank.TransactionID] =
         for {
           id <- F.delay(ju.UUID.randomUUID())
+          createdAt <- F.delay(Instant.now)
           trans = Withdrawal(id, userID, amount, createdAt)
           _ <- eventsTopic.publish1(trans)
         } yield id
 
       def deposit(
           userID: Bank.UserID,
-          amount: Bank.Money,
-          createdAt: Bank.CreatedAt
+          amount: Bank.Money
       ): F[Bank.TransactionID] =
         for {
           id <- F.delay(ju.UUID.randomUUID())
+          createdAt <- F.delay(Instant.now)
           trans = Deposit(id, userID, amount, createdAt)
           _ <- eventsTopic.publish1(trans)
         } yield id

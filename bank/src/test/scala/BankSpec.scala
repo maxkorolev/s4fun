@@ -25,11 +25,10 @@ class BankSpec extends FlatSpec with Matchers {
       service = Bank.impl[IO](topic)
       userID = "maxkorolev"
       amount = 100
-      createdAt <- Stream.eval(IO.delay(Instant.now))
 
-      publishDeposit = Stream.eval(service.deposit(userID, amount, createdAt))
+      publishDeposit = Stream.eval(service.deposit(userID, amount))
       publishWithdrawal = Stream.eval(
-        service.withdraw(userID, amount, createdAt)
+        service.withdraw(userID, amount)
       )
 
       (transID, trans) <- (publishDeposit ++ publishWithdrawal) zip service.transactions
