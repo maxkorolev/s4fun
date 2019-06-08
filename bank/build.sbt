@@ -13,13 +13,13 @@ lazy val compileFlags = Seq(
   "-Xfatal-warnings"
 )
 
-lazy val mini_book = (project in file("."))
+lazy val bank = (project in file("."))
   .settings(
     scalaVersion := "2.12.8",
     crossScalaVersions := Seq(scalaVersion.value, "2.11.11"),
     scalacOptions ++= compileFlags,
     organization := "com.maxkorolev",
-    name := "mini_book",
+    name := "bank",
     version := "0.0.1-SNAPSHOT",
     addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.6"),
     addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4"),
@@ -30,6 +30,7 @@ lazy val mini_book = (project in file("."))
       catsEffect,
       shapeless,
       simulacrum,
-      fastparse
-    )
+      fastparse,
+      pureconfig
+    ) ++ http4s
   )
