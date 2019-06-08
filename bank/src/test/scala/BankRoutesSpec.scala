@@ -32,7 +32,7 @@ class BankRoutesSpec extends FlatSpec with Matchers {
     } yield {
       withdrawal.status shouldEqual Status.Ok
       deposit.status shouldEqual Status.Ok
-      balance.status shouldEqual Status.Ok
+      withdrawal.status shouldEqual Status.Ok
     }).unsafeRunSync()
   }
 }
