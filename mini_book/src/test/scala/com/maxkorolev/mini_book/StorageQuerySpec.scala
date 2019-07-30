@@ -10,7 +10,8 @@ case class Value(value: Int) extends AnyVal
 
 class StorageQuerySpec extends FlatSpec with Matchers {
 
-  implicit val contextShift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+  implicit val contextShift: ContextShift[IO] =
+    IO.contextShift(ExecutionContext.global)
 
   "StorageQuery" should "be able get sorted list" in {
 
@@ -29,7 +30,7 @@ class StorageQuerySpec extends FlatSpec with Matchers {
       lst <- query.getSorted
 
     } yield {
-      lst.map(_._2.value) shouldEqual List(777, 123)
+      lst.map(_._2.value) shouldEqual List(123, 777)
     }).unsafeRunSync()
   }
 }
