@@ -74,8 +74,6 @@ class StorageSpec extends FlatSpec with Matchers {
     val lst = Cons("1", Cons("2", Cons("3", Empty)))
 
     Lst.foldr(lst)("")(_ + _) shouldEqual "321"
-    Lst.foldr2(lst)("")(_ + _) shouldEqual "321"
-
   }
 
   "Expr" should "have foldr" in {
@@ -97,12 +95,11 @@ class StorageSpec extends FlatSpec with Matchers {
       case MulF(l, r) => l * r
     } shouldEqual 7
 
-    ExprF.foldRS2[Int, Int](exp) {
-      case LitF(t)    => t
-      case AddF(l, r) => l + r
-      case MulF(l, r) => l * r
-    } shouldEqual 7
-
+    ExprF.foldRS[Int, String](exp) {
+      case LitF(t)    => t.toString
+      case AddF(l, r) => s"$l + $r"
+      case MulF(l, r) => s"$l * $r"
+    } shouldEqual "1 + 2 * 3"
   }
 
   "Expr" should "have Recursive instance" in {

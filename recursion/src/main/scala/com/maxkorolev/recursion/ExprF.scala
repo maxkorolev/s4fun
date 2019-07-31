@@ -7,10 +7,10 @@ case class MulF[Z](l: Z, r: Z) extends ExprF[Z]
 
 object ExprF {
 
-  def foldRS[A, Z](exp: Expr)(algebra: Algebra[ExprF, Z]): Z = exp match {
-    case Lit(t)    => algebra(LitF(t))
-    case Add(l, r) => algebra(AddF(foldRS(l)(algebra), foldRS(r)(algebra)))
-    case Mul(l, r) => algebra(MulF(foldRS(l)(algebra), foldRS(r)(algebra)))
+  def foldRS[Z, A](exp: Expr)(f: Algebra[ExprF, A]): A = exp match {
+    case Lit(t)    => f(LitF(t))
+    case Add(l, r) => f(AddF(foldRS(l)(f), foldRS(r)(f)))
+    case Mul(l, r) => f(MulF(foldRS(l)(f), foldRS(r)(f)))
   }
 
   def project(exp: Expr): ExprF[Expr] = exp match {
@@ -31,6 +31,7 @@ object ExprF {
     case MulF(l, r) => MulF(f(l), f(r))
   }
 
-  def foldRS2[A, Z](exp: Expr)(algebra: Algebra[ExprF, Z]): Z =
-    algebra(map(project(exp))(tree => foldRS2(tree)(algebra)))
+  def foldRS2[Z, A](exp: Expr)(f: Algebra[ExprF, A]): A =
+    f(map(project(exp))(v => foldRS2(v)(f)))
+
 }
