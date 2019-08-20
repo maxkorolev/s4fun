@@ -12,3 +12,4 @@ lazy val mini_book = project
 lazy val animation = project
 lazy val bank = project
 lazy val recursion = project
+lazy val codility = project
