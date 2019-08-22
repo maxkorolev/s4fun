@@ -1,4 +1,4 @@
-package com.maxkorolev.recursion
+package com.maxkorolev.recursion.exp
 
 import cats.Functor
 

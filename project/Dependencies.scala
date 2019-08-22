@@ -18,6 +18,7 @@ object Dependencies {
   lazy val fastparse = "com.lihaoyi" %% "fastparse" % "2.1.0"
   lazy val pureconfig = "com.github.pureconfig" %% "pureconfig" % "0.11.0"
   lazy val sangria = "org.sangria-graphql" %% "sangria" % "1.4.2"
+  lazy val droste = "io.higherkindness" %% "droste-core" % "0.7.0"
 
   lazy val http4s = Seq(
     "org.http4s" %% "http4s-blaze-server" % Http4sVersion,

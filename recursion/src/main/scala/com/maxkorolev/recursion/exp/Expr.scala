@@ -1,4 +1,4 @@
-package com.maxkorolev.recursion
+package com.maxkorolev.recursion.exp
 
 sealed trait Expr
 case class Lit(t: Int) extends Expr

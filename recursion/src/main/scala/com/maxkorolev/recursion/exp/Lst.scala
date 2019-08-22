@@ -1,4 +1,4 @@
-package com.maxkorolev.recursion
+package com.maxkorolev.recursion.exp
 
 sealed trait Lst[+T]
 

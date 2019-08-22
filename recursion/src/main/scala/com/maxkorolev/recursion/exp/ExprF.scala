@@ -1,4 +1,4 @@
-package com.maxkorolev.recursion
+package com.maxkorolev.recursion.exp
 
 sealed trait ExprF[+Z]
 case class LitF(t: Int) extends ExprF[Nothing]

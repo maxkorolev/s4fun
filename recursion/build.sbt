@@ -31,6 +31,7 @@ lazy val recursion = (project in file("."))
       shapeless,
       simulacrum,
       fastparse,
-      sangria
+      sangria,
+      droste
     )
   )

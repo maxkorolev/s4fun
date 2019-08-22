@@ -1,4 +1,4 @@
-package com.maxkorolev.recursion
+package com.maxkorolev.recursion.exp
 
 import cats.effect._
 import org.scalatest._
@@ -6,7 +6,7 @@ import org.scalatest._
 import scala.concurrent.ExecutionContext
 import scala.annotation.tailrec
 
-class StorageSpec extends FlatSpec with Matchers {
+class ExpSpec extends FlatSpec with Matchers {
 
   "Iso" should "ex1" in {
 

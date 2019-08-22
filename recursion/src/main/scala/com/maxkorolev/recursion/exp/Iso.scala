@@ -1,4 +1,4 @@
-package com.maxkorolev.recursion
+package com.maxkorolev.recursio.exp
 
 trait Iso[A, B] {
   def from(x: A): B
