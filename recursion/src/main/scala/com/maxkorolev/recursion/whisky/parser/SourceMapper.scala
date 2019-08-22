@@ -1,7 +1,7 @@
 package com.maxkorolev.recursion.whisky.parser
 
 import org.parboiled2.ParserInput
-import sangria.ast.AstLocation
+import com.maxkorolev.recursion.whisky.ast.AstLocation
 
 import scala.collection.breakOut
 
@@ -28,7 +28,7 @@ class DefaultSourceMapper(val id: String, val parserInput: ParserInput)
 class AggregateSourceMapper(val id: String, val delegates: Vector[SourceMapper])
     extends SourceMapper {
   lazy val delegateById: Map[String, SourceMapper] =
-    delegates.map(d => d.id → d)(breakOut)
+    delegates.map(d => d.id -> d)(breakOut)
 
   lazy val source = delegates.map(_.source.trim) mkString "\n\n"
 

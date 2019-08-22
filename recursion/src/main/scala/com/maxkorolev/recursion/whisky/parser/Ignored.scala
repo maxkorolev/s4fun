@@ -6,6 +6,9 @@ import org.parboiled2._
 import org.parboiled2.CharPredicate.{Digit19, HexDigit}
 
 import scala.util.{Failure, Success}
+import com.maxkorolev.recursion.whisky.ast
+import higherkindness.droste.data._
+import sangria.ast.AstNode
 
 trait Ignored extends PositionTracking { this: Parser =>
   def parseComments: Boolean
@@ -31,15 +34,15 @@ trait Ignored extends PositionTracking { this: Parser =>
   }
 
   def Comments = rule {
-    test(parseComments) ~ CommentCap.* ~ Ignored.* ~> (_.toVector) | CommentNoCap.* ~ Ignored.* ~ push(
-      Vector.empty
+    test(parseComments) ~ CommentCap.* ~ Ignored.* ~> (_.toList) | CommentNoCap.* ~ Ignored.* ~ push(
+      Nil
     )
   }
 
   def CommentCap = rule {
     trackPos ~ "#" ~ capture(CommentChar.*) ~ IgnoredNoComment.* ~> {
       (location, comment) =>
-        ast.Comment(comment, location)
+        ast.Ast(location, ast.Comment(comment))
     }
   }
 

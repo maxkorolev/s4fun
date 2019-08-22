@@ -6,12 +6,11 @@ import org.parboiled2._
 import org.parboiled2.CharPredicate.{Digit19, HexDigit}
 
 import scala.util.{Failure, Success}
+import com.maxkorolev.recursion.whisky.ast
 
 class QueryParser private (
     val input: ParserInput,
     val sourceId: String,
-    val legacyImplementsInterface: Boolean = false,
-    val legacyEmptyFields: Boolean = false,
     val experimentalFragmentVariables: Boolean = false,
     val parseLocations: Boolean = true,
     val parseComments: Boolean = true
@@ -40,8 +39,6 @@ object QueryParser {
     val parser = new QueryParser(
       input,
       id,
-      config.legacyImplementsInterface,
-      config.legacyEmptyFields,
       config.experimentalFragmentVariables,
       config.parseLocations,
       config.parseComments
@@ -96,8 +93,6 @@ object QueryParser {
     val parser = new QueryParser(
       input,
       id,
-      config.legacyImplementsInterface,
-      config.legacyEmptyFields,
       config.experimentalFragmentVariables,
       config.parseLocations,
       config.parseComments

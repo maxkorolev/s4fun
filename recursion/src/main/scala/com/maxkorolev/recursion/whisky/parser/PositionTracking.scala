@@ -3,6 +3,7 @@ package com.maxkorolev.recursion.whisky.parser
 import org.parboiled2._
 
 import scala.annotation.tailrec
+import com.maxkorolev.recursion.whisky.ast
 
 trait PositionTracking { this: Parser =>
   private var lineIdx = Array(0)
@@ -16,12 +17,12 @@ trait PositionTracking { this: Parser =>
     } | MATCH
   }
 
-  def trackPos: Rule1[Option[AstLocation]] = rule {
+  def trackPos: Rule1[ast.AstLocation] = rule {
     test(parseLocations) ~ push {
       val (size, lastCursor) = findLastItem(lineIdx, cursor)
 
-      Some(AstLocation(sourceId, cursor, size, cursor - lastCursor + 1))
-    } | push(None)
+      ast.AstLocation(sourceId, cursor, size, cursor - lastCursor + 1)
+    } | push(ast.AstLocation(sourceId, cursor, 0, 0)) // TODO fix
   }
 
   /**

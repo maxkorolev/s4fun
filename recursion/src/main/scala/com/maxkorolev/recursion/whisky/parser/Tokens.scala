@@ -6,6 +6,8 @@ import org.parboiled2._
 import org.parboiled2.CharPredicate.{Digit19, HexDigit}
 
 import scala.util.{Failure, Success}
+import com.maxkorolev.recursion.whisky.util._
+import com.maxkorolev.recursion.whisky.ast
 
 trait Tokens extends StringBuilding with PositionTracking {
   this: Parser with Ignored =>
@@ -32,9 +34,11 @@ trait Tokens extends StringBuilding with PositionTracking {
     atomic(
       Comments ~ trackPos ~ IntegerValuePart ~ FloatValuePart.? ~ IgnoredNoComment.*
     ) ~> { (comment, location, intPart, floatPart) =>
-      floatPart map (
-          f => ast.BigDecimalValue(BigDecimal(intPart + f), comment, location)
-      ) getOrElse ast.BigIntValue(BigInt(intPart), comment, location)
+      floatPart.fold(
+        ast.Ast(location, ast.BigIntValue(BigInt(intPart), comment))
+      ) { f =>
+        ast.Ast(location, ast.BigDecimalValue(BigDecimal(intPart + f), comment))
+      }
     }
   }
 
@@ -66,12 +70,10 @@ trait Tokens extends StringBuilding with PositionTracking {
     Comments ~ trackPos ~ BlockString ~ clearSB() ~ BlockStringCharacters ~ BlockString ~ push(
       sb.toString
     ) ~ IgnoredNoComment.* ~> { (comment, location, s) =>
-      ast.StringValue(
-        StringUtil.blockStringValue(s),
-        true,
-        Some(s),
-        comment,
-        location
+      ast.Ast(
+        location,
+        ast
+          .StringValue(StringUtil.blockStringValue(s), true, Option(s), comment)
       )
     }
   }
@@ -99,7 +101,7 @@ trait Tokens extends StringBuilding with PositionTracking {
   def NonBlockStringValue = rule {
     Comments ~ trackPos ~ '"' ~ clearSB() ~ Characters ~ '"' ~ push(sb.toString) ~ IgnoredNoComment.* ~> {
       (comment, location, s) =>
-        ast.StringValue(s, false, None, comment, location)
+        ast.Ast(location, ast.StringValue(s, false, None, comment))
     }
   }
 
