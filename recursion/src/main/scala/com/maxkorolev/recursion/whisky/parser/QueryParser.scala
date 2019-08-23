@@ -7,6 +7,8 @@ import org.parboiled2.CharPredicate.{Digit19, HexDigit}
 
 import scala.util.{Failure, Success}
 import com.maxkorolev.recursion.whisky.ast
+import cats.syntax.all._
+import cats.instances.either._
 
 class QueryParser private (
     val input: ParserInput,
@@ -26,15 +28,17 @@ class QueryParser private (
     with TypeSystemDefinitions
 
 object QueryParser {
-  def parse(input: String, config: ParserConfig = ParserConfig.default)(
-      implicit scheme: DeliveryScheme[ast.Document]
-  ): scheme.Result = {
-    parse(ParserInput(input), config)(scheme)
+  def parse(
+      input: String,
+      config: ParserConfig = ParserConfig.default
+  ): Either[Throwable, ast.Ast] = {
+    parse(ParserInput(input), config)
   }
 
-  def parse(input: ParserInput, config: ParserConfig)(
-      implicit scheme: DeliveryScheme[ast.Document]
-  ): scheme.Result = {
+  def parse(
+      input: ParserInput,
+      config: ParserConfig
+  ): Either[Throwable, ast.Ast] = {
     val id = config.sourceIdFn(input)
     val parser = new QueryParser(
       input,
@@ -46,49 +50,48 @@ object QueryParser {
 
     parser.Document.run() match {
       case Success(res) =>
-        scheme.success(
-          res.copy(sourceMapper = config.sourceMapperFn(id, input))
-        )
+        Right(res)
       case Failure(e: ParseError) =>
-        scheme.failure(SyntaxError(parser, input, e))
-      case Failure(e) => scheme.failure(e)
+        Left(SyntaxError(parser, input, e))
+      case Failure(e) => Left(e)
     }
   }
 
-  def parseInput(
-      input: String
-  )(implicit scheme: DeliveryScheme[ast.Value]): scheme.Result =
-    parseInput(ParserInput(input))(scheme)
+  // def parseInput(
+  //     input: String
+  // ): Either[Throwable, ast.Ast] =
+  //   parseInput(ParserInput(input))
 
-  def parseInput(
-      input: ParserInput
-  )(implicit scheme: DeliveryScheme[ast.Value]): scheme.Result = {
-    val parser = new QueryParser(input, "")
+  // def parseInput(
+  //     input: ParserInput
+  // ): Either[Throwable, ast.Ast] = {
+  //   val parser = new QueryParser(input, "")
 
-    parser.InputDocument.run() match {
-      case Success(res) if res.values.nonEmpty =>
-        scheme.success(res.values.head)
-      case Success(res) =>
-        scheme.failure(
-          new IllegalArgumentException(
-            "Input document does not contain any value definitions."
-          )
-        )
-      case Failure(e: ParseError) =>
-        scheme.failure(SyntaxError(parser, input, e))
-      case Failure(e) => scheme.failure(e)
-    }
-  }
+  //   parser.InputDocument.run() match {
+  //     case Success(res) if res.values.nonEmpty =>
+  //       Right(res.values.head)
+  //     case Success(res) =>
+  //       Left(
+  //         new IllegalArgumentException(
+  //           "Input document does not contain any value definitions."
+  //         )
+  //       )
+  //     case Failure(e: ParseError) =>
+  //       Left(SyntaxError(parser, input, e))
+  //     case Failure(e) => Left(e)
+  //   }
+  // }
 
   def parseInputDocument(
       input: String,
       config: ParserConfig = ParserConfig.default
-  )(implicit scheme: DeliveryScheme[ast.InputDocument]): scheme.Result =
-    parseInputDocument(ParserInput(input), config)(scheme)
+  ): Either[Throwable, ast.Ast] =
+    parseInputDocument(ParserInput(input), config)
 
-  def parseInputDocument(input: ParserInput, config: ParserConfig)(
-      implicit scheme: DeliveryScheme[ast.InputDocument]
-  ): scheme.Result = {
+  def parseInputDocument(
+      input: ParserInput,
+      config: ParserConfig
+  ): Either[Throwable, ast.Ast] = {
     val id = config.sourceIdFn(input)
     val parser = new QueryParser(
       input,
@@ -100,60 +103,57 @@ object QueryParser {
 
     parser.InputDocument.run() match {
       case Success(res) =>
-        scheme.success(
-          res.copy(sourceMapper = config.sourceMapperFn(id, input))
-        )
+        Right(res)
       case Failure(e: ParseError) =>
-        scheme.failure(SyntaxError(parser, input, e))
-      case Failure(e) => scheme.failure(e)
+        Left(SyntaxError(parser, input, e))
+      case Failure(e) => Left(e)
     }
   }
 
-  def parseInputWithVariables(
-      input: String
-  )(implicit scheme: DeliveryScheme[ast.Value]): scheme.Result =
-    parseInputWithVariables(ParserInput(input))(scheme)
+  // def parseInputWithVariables(
+  //     input: String
+  // ): Either[Throwable, ast.Ast] =
+  //   parseInputWithVariables(ParserInput(input))
 
-  def parseInputWithVariables(
-      input: ParserInput
-  )(implicit scheme: DeliveryScheme[ast.Value]): scheme.Result = {
-    val parser = new QueryParser(input, "")
+  // def parseInputWithVariables(
+  //     input: ParserInput
+  // ): Either[Throwable, ast.Ast] = {
+  //   val parser = new QueryParser(input, "")
 
-    parser.InputDocumentWithVariables.run() match {
-      case Success(res) if res.values.nonEmpty =>
-        scheme.success(res.values.head)
-      case Success(res) =>
-        scheme.failure(
-          new IllegalArgumentException(
-            "Input document does not contain any value definitions."
-          )
-        )
-      case Failure(e: ParseError) =>
-        scheme.failure(SyntaxError(parser, input, e))
-      case Failure(e) => scheme.failure(e)
-    }
-  }
+  //   parser.InputDocumentWithVariables.run() match {
+  //     case Success(res) if res.values.nonEmpty =>
+  //       Right(res.values.head)
+  //     case Success(res) =>
+  //       Left(
+  //         new IllegalArgumentException(
+  //           "Input document does not contain any value definitions."
+  //         )
+  //       )
+  //     case Failure(e: ParseError) =>
+  //       Left(SyntaxError(parser, input, e))
+  //     case Failure(e) => Left(e)
+  //   }
+  // }
 
   def parseInputDocumentWithVariables(
       input: String,
       config: ParserConfig = ParserConfig.default
-  )(implicit scheme: DeliveryScheme[ast.InputDocument]): scheme.Result =
-    parseInputDocumentWithVariables(ParserInput(input), config)(scheme)
+  ): Either[Throwable, ast.Ast] =
+    parseInputDocumentWithVariables(ParserInput(input), config)
 
-  def parseInputDocumentWithVariables(input: ParserInput, config: ParserConfig)(
-      implicit scheme: DeliveryScheme[ast.InputDocument]
-  ): scheme.Result = {
+  def parseInputDocumentWithVariables(
+      input: ParserInput,
+      config: ParserConfig
+  ): Either[Throwable, ast.Ast] = {
     val id = config.sourceIdFn(input)
     val parser = new QueryParser(input, id)
 
     parser.InputDocumentWithVariables.run() match {
       case Success(res) =>
-        scheme.success(
-          res.copy(sourceMapper = config.sourceMapperFn(id, input))
-        )
+        Right(res)
       case Failure(e: ParseError) =>
-        scheme.failure(SyntaxError(parser, input, e))
-      case Failure(e) => scheme.failure(e)
+        Left(SyntaxError(parser, input, e))
+      case Failure(e) => Left(e)
     }
   }
 }

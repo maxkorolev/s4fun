@@ -33,10 +33,9 @@ trait Ignored extends PositionTracking { this: Parser =>
     )
   }
 
-  def Comments = rule {
-    test(parseComments) ~ CommentCap.* ~ Ignored.* ~> (_.toList) | CommentNoCap.* ~ Ignored.* ~ push(
-      Nil
-    )
+  def Comments: Rule1[List[ast.Ast]] = rule {
+    test(parseComments) ~ CommentCap.* ~ Ignored.* ~> (_.toList) |
+      CommentNoCap.* ~ Ignored.* ~ push(Nil)
   }
 
   def CommentCap = rule {

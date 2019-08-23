@@ -17,8 +17,6 @@ trait TypeSystemDefinitions {
     with Operations
     with Values
     with Fragments =>
-  def legacyImplementsInterface: Boolean
-  def legacyEmptyFields: Boolean
 
   def scalar = rule { Keyword("scalar") }
   def `type` = rule { Keyword("type") }
@@ -61,11 +59,11 @@ trait TypeSystemDefinitions {
           ast.ObjectTypeDefinition(
             name,
             interfaces,
-            fields.fold(Nil[ast.FieldDefinition])(_._1.toList),
+            fields.fold(Nil: List[ast.Ast])(_._1.toList),
             dirs,
             descr,
             comment,
-            fields.fold(Nil[ast.Comment])(_._2)
+            fields.fold(Nil: List[ast.Ast])(_._2)
           )
         )
     }
@@ -90,7 +88,10 @@ trait TypeSystemDefinitions {
       '{'
     ) ~ OperationTypeDefinition.+ ~ Comments ~ wsNoComment('}') ~> {
       (comment, location, dirs, ops, tc) =>
-        ast.SchemaExtensionDefinition(ops.toList, dirs, comment, tc, location)
+        ast.Ast(
+          location,
+          ast.SchemaExtensionDefinition(ops.toList, dirs, comment, tc)
+        )
     }) |
       (Comments ~ trackPos ~ extend ~ schema ~ DirectivesConst ~> {
         (comment, location, dirs) =>
@@ -183,7 +184,10 @@ trait TypeSystemDefinitions {
   def UnionTypeExtensionDefinition = rule {
     (Comments ~ trackPos ~ extend ~ union ~ Name ~ (DirectivesConst.? ~> (_ getOrElse Nil)) ~ UnionMemberTypes ~> {
       (comment, location, name, dirs, types) =>
-        ast.UnionTypeExtensionDefinition(name, types, dirs, comment, location)
+        ast.Ast(
+          location,
+          ast.UnionTypeExtensionDefinition(name, types, dirs, comment)
+        )
     }) |
       (Comments ~ trackPos ~ extend ~ union ~ Name ~ DirectivesConst ~> {
         (comment, location, name, dirs) =>
@@ -266,14 +270,11 @@ trait TypeSystemDefinitions {
   }
 
   def ImplementsInterfaces = rule {
-    test(legacyImplementsInterface) ~ implements ~ NamedType.+ ~> (_.toList) |
-      implements ~ ws('&').? ~ NamedType.+(ws('&')) ~> (_.toList)
+    implements ~ ws('&').? ~ NamedType.+(ws('&')) ~> (_.toList)
   }
 
   def FieldsDefinition = rule {
-    wsNoComment('{') ~ (test(legacyEmptyFields) ~ FieldDefinition.* | FieldDefinition.+) ~ Comments ~ wsNoComment(
-      '}'
-    ) ~> (_ -> _)
+    wsNoComment('{') ~ FieldDefinition.+ ~ Comments ~ wsNoComment('}') ~> (_ -> _)
   }
   def FieldDefinition = rule {
     Description ~ Comments ~ trackPos ~ Name ~ (ArgumentsDefinition.? ~> (_ getOrElse Nil)) ~ ws(
@@ -322,11 +323,11 @@ trait TypeSystemDefinitions {
           location,
           ast.InterfaceTypeDefinition(
             name,
-            fields.fold(Nil[ast.FieldDefinition])(_._1.toList),
+            fields.fold(Nil: List[ast.Ast])(_._1.toList),
             dirs,
             descr,
             comment,
-            fields.fold(Nil[ast.Comment])(_._2)
+            fields.fold(Nil: List[ast.Ast])(_._2)
           )
         )
     }
@@ -353,11 +354,11 @@ trait TypeSystemDefinitions {
           location,
           ast.EnumTypeDefinition(
             name,
-            values.fold(Nil[ast.EnumValueDefinition])(_._1.toList),
+            values.fold(Nil: List[ast.Ast])(_._1.toList),
             dirs,
             descr,
             comment,
-            values.fold(Nil[ast.Comment])(_._2)
+            values.fold(Nil: List[ast.Ast])(_._2)
           )
         )
     }
@@ -381,20 +382,18 @@ trait TypeSystemDefinitions {
           location,
           ast.InputObjectTypeDefinition(
             name,
-            fields.fold(Nil[ast.InputValueDefinition])(_._1.toList),
+            fields.fold(Nil: List[ast.Ast])(_._1.toList),
             dirs,
             descr,
             comment,
-            fields.fold(Nil[ast.Comment])(_._2)
+            fields.fold(Nil: List[ast.Ast])(_._2)
           )
         )
     }
   }
 
   def InputFieldsDefinition = rule {
-    wsNoComment('{') ~ (test(legacyEmptyFields) ~ InputValueDefinition.* | InputValueDefinition.+) ~ Comments ~ wsNoComment(
-      '}'
-    ) ~> (_ -> _)
+    wsNoComment('{') ~ InputValueDefinition.+ ~ Comments ~ wsNoComment('}') ~> (_ -> _)
   }
 
   def DirectiveDefinition = rule {

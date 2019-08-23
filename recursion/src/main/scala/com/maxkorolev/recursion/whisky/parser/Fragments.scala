@@ -33,9 +33,9 @@ trait Fragments {
           ast.InlineFragment(
             typeCondition,
             dirs,
-            sels.selections,
+            sels._1,
             comment,
-            sels.comments
+            sels._2
           )
         )
     }

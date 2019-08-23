@@ -50,7 +50,7 @@ sealed trait Definition[+Z] extends AstNode[Z]
 
 case class OperationDefinition[+Z](
     operationType: OperationType = OperationType.Query,
-    name: Option[Z] = None,
+    name: Option[String] = None,
     variables: List[Z] = Nil,
     directives: List[Z] = Nil,
     selections: List[Z],
@@ -78,7 +78,7 @@ object OperationType {
 
 case class VariableDefinition[+Z](
     name: String,
-    tpe: Type[Z],
+    tpe: Z,
     defaultValue: Option[Z],
     directives: List[Z] = Nil,
     comments: List[Z] = Nil
@@ -93,7 +93,7 @@ case class ListType[+Z](ofType: Z) extends Type[Z]
 sealed trait Selection[+Z] extends AstNode[Z]
 
 case class Field[+Z](
-    alias: Option[Z],
+    alias: Option[String],
     name: String,
     arguments: List[Z],
     directives: List[Z],

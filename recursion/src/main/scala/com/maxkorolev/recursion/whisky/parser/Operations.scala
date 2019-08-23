@@ -83,10 +83,10 @@ trait Operations extends PositionTracking {
 
   def DefaultValue = rule { wsNoComment('=') ~ ValueConst }
 
-  def SelectionSet: Rule1[(ast.Ast, ast.Ast)] = rule {
-    wsNoComment('{') ~ trackPos ~ Selection.+ ~ Comments ~ wsNoComment('}') ~> {
-      (location, x, comments) =>
-        ast.Ast(location, x.toList) -> ast.Ast(location, comments)
+  def SelectionSet: Rule1[(List[ast.Ast], List[ast.Ast])] = rule {
+    wsNoComment('{') ~ Selection.+ ~ Comments ~ wsNoComment('}') ~> {
+      (x: Seq[ast.Ast], comments: List[ast.Ast]) =>
+        x.toList -> comments
     }
   }
 
