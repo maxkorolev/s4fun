@@ -97,12 +97,7 @@ trait TypeSystemDefinitions {
         (comment, location, dirs) =>
           ast.Ast(
             location,
-            ast.SchemaExtensionDefinition(
-              Nil,
-              dirs,
-              comment,
-              Nil
-            )
+            ast.SchemaExtensionDefinition(Nil, dirs, comment, Nil)
           )
       })
   }
